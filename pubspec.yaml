@@ -1,0 +1,30 @@
+name: vesion6
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_inappwebview: ^6.0.0
+  url_launcher:
+  flutter_native_splash: ^2.3.10
+  device_info_plus: ^9.1.2
+  firebase_core: ^2.27.0
+  firebase_database: ^10.4.9
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/splash.png
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
