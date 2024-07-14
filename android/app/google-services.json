@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "1003291557669",
-    "firebase_url": "https://flutter-speed-default-rtdb.firebaseio.com",
-    "project_id": "flutter-speed",
-    "storage_bucket": "flutter-speed.appspot.com"
+    "project_number": "840865245864",
+    "firebase_url": "https://test8-1cc0c-default-rtdb.firebaseio.com",
+    "project_id": "test8-1cc0c",
+    "storage_bucket": "test8-1cc0c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1003291557669:android:888cef2c5df10a483924cc",
+        "mobilesdk_app_id": "1:840865245864:android:95b26545753a42c565309d",
         "android_client_info": {
           "package_name": "com.example.vesion6"
         }
@@ -16,7 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD9m2b7L-W-ojsUVHZjrXc-nmGjXq6FVQI"
+          "current_key": "AIzaSyCiIdWUfdycJfqgBT0oXFgAtqRcbHO1hng"
         }
       ],
       "services": {

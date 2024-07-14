@@ -55,21 +55,21 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD9m2b7L-W-ojsUVHZjrXc-nmGjXq6FVQI',
-    appId: '1:1003291557669:android:888cef2c5df10a483924cc',
-    messagingSenderId: '1003291557669',
-    projectId: 'flutter-speed',
-    databaseURL: 'https://flutter-speed-default-rtdb.firebaseio.com',
-    storageBucket: 'flutter-speed.appspot.com',
+    apiKey: 'AIzaSyCiIdWUfdycJfqgBT0oXFgAtqRcbHO1hng',
+    appId: '1:840865245864:android:95b26545753a42c565309d',
+    messagingSenderId: '840865245864',
+    projectId: 'test8-1cc0c',
+    databaseURL: 'https://test8-1cc0c-default-rtdb.firebaseio.com',
+    storageBucket: 'test8-1cc0c.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBdh8OBjWIrkm5IDeYbDtsaYMq5CxJBpOk',
-    appId: '1:1003291557669:ios:2c08075d13a7f09e3924cc',
-    messagingSenderId: '1003291557669',
-    projectId: 'flutter-speed',
-    databaseURL: 'https://flutter-speed-default-rtdb.firebaseio.com',
-    storageBucket: 'flutter-speed.appspot.com',
+    apiKey: 'AIzaSyDl14oZYxuHya68M6ah9g6wNFuUuTgxPQE',
+    appId: '1:840865245864:ios:40375c6ada6ae81865309d',
+    messagingSenderId: '840865245864',
+    projectId: 'test8-1cc0c',
+    databaseURL: 'https://test8-1cc0c-default-rtdb.firebaseio.com',
+    storageBucket: 'test8-1cc0c.appspot.com',
     iosBundleId: 'com.example.vesion6',
   );
 
