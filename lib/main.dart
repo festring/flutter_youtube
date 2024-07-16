@@ -3,13 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
 
-String userId = "_";
 String prevUrl = "https://m.youtube.com/";
 List<dynamic> speedList = [];
 num endPoint = 0;
@@ -20,29 +20,45 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  await initializeRandomNumber();
+  int randomNumber = await getRandomNumber(); // 랜덤 숫자를 가져와서 변수에 저장
 
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
-    AndroidDeviceInfo info = await deviceInfo.androidInfo;
-    userId = '${info.id}${info.device}';
-  } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-    IosDeviceInfo info = await deviceInfo.iosInfo;
-    userId = '${info.identifierForVendor}${info.model}';
+  } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {}
+
+  runApp(MaterialApp(
+    home: MyApp(randomNumber: randomNumber),
+  ));
+}
+
+Future<void> initializeRandomNumber() async {
+  final prefs = await SharedPreferences.getInstance();
+  const key = 'random_number';
+
+  if (!prefs.containsKey(key)) {
+    final random = Random();
+    final randomNumber = random.nextInt(1000000); // 0부터 999999 사이의 난수 생성
+    await prefs.setInt(key, randomNumber);
   }
-  debugPrint("userId: $userId");
-  runApp(const MaterialApp(home: MyApp()));
+}
+
+Future<int> getRandomNumber() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getInt('random_number') ?? 0;
 }
 
 class MyApp extends StatefulWidget {
+  final int randomNumber;
   //const MyApp({Key? key}) : super(key: key); 이 옳은 표현? 알아보기
-  const MyApp({super.key});
+  const MyApp({super.key, required this.randomNumber});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  String jsCode = '';
   final GlobalKey webViewKey = GlobalKey();
   // 인앱웹뷰 컨트롤러
   InAppWebViewController? webViewController;
@@ -65,7 +81,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
+    // debugPrint('MyAppState Random Number: ${widget.randomNumber}');
+    _loadJavaScriptCode();
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
@@ -83,6 +100,10 @@ class _MyAppState extends State<MyApp> {
               }
             },
           );
+  }
+
+  Future<void> _loadJavaScriptCode() async {
+    jsCode = await rootBundle.loadString('assets/js_code.js');
   }
 
   @override
@@ -132,8 +153,10 @@ class _MyAppState extends State<MyApp> {
                     this.url = url.toString();
                     urlController.text = this.url;
                     //debugPrint("onLoadStart: $url");
-                    //debugPrint("who: $userId");
+                    // debugPrint(
+                    //     'onLoadStart Random Number: ${widget.randomNumber}');
                   });
+                  controller.evaluateJavascript(source: jsCode);
                   controller.evaluateJavascript(source: """
                     let previousTime = 0;
                     let currentTime = 0;
@@ -171,30 +194,7 @@ class _MyAppState extends State<MyApp> {
 
                     }, 1000);
 
-                    setInterval(function() {
-                      const adAvatarElements = document.querySelectorAll('.ytp-ad-avatar-lockup-card.ytp-ad-component--clickable');
-                      const adInfoElements = document.querySelectorAll('.ytp-ad-player-overlay-layout__ad-info-container');
-                      adAvatarElements.forEach(adElement => {
-                          adElement.remove();
-                      });
-                      adInfoElements.forEach(adElement => {
-                          adElement.remove();
-                      });
-                      const skipButton = document.querySelector('.ytp-skip-ad-button');   
-                      if (skipButton) {
-                          skipButton.click();
-                      }
-                      if (document.querySelectorAll('.ad-showing').length > 0) {
-                        const titleLinkElements = document.querySelectorAll('.ytp-title-link.yt-uix-sessionlink.ytp-title-fullerscreen-link');
-                        titleLinkElements.forEach(titleLinkElement => {
-                            titleLinkElement.remove();
-                        });
-                        const video = document.querySelector('video');
-                        if(video) {
-                          video.currentTime = video.duration;
-                        }
-                      }
-                    }, 100);
+
                   """);
                 },
 
@@ -284,7 +284,7 @@ class _MyAppState extends State<MyApp> {
                         // String goChannel = channel ?? "ijoiji";
                         FirebaseDatabase endChange = FirebaseDatabase.instance;
                         await endChange
-                            .ref("eisnx02m") //userId
+                            .ref('${widget.randomNumber}') //userId
                             .child(endNow.toString().replaceAll(".", "_"))
                             .set({
                           "URL": prevUrl.toString(),
