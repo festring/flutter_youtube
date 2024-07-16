@@ -12,8 +12,6 @@ import 'firebase_options.dart';
 String userId = "_";
 String prevUrl = "https://m.youtube.com/";
 List<dynamic> speedList = [];
-// String? channel = "ijoiji";
-// num duration = 0;
 num endPoint = 0;
 
 Future main() async {
@@ -27,20 +25,12 @@ Future main() async {
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
     AndroidDeviceInfo info = await deviceInfo.androidInfo;
-    userId = info.id.toString();
-    //debugPrint(userId);
-    userId += info.device.toString();
-    //debugPrint(userId);
-    // userId += info.model.toString();
-    // debugPrint(userId);
-    // userId += info.board.toString();
-    // debugPrint(userId);
-    // userId += info.serialNumber.toString();
-    // debugPrint(userId);
-    // userId = userId.replaceAll(".", "_");
-    // debugPrint(userId);
+    userId = '${info.id}${info.device}';
+  } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+    IosDeviceInfo info = await deviceInfo.iosInfo;
+    userId = '${info.identifierForVendor}${info.model}';
   }
-
+  debugPrint("userId: $userId");
   runApp(const MaterialApp(home: MyApp()));
 }
 
