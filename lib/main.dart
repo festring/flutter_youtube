@@ -335,6 +335,18 @@ class _MyAppState extends State<MyApp> {
                     //print(consoleMessage);
                   }
                 },
+                onEnterFullscreen: (controller) {
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.landscapeRight,
+                    DeviceOrientation.landscapeLeft
+                  ]);
+                },
+                onExitFullscreen: (controller) {
+                  SystemChrome.setPreferredOrientations([
+                    DeviceOrientation.portraitUp,
+                    DeviceOrientation.portraitDown,
+                  ]);
+                },
               ),
 
               // 페이지 로딩 중 프로그레스 바 표시
