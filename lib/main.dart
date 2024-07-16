@@ -12,7 +12,7 @@ import 'dart:math';
 
 String prevUrl = "https://m.youtube.com/";
 List<dynamic> speedList = [];
-num endPoint = 0;
+num? endPoint = 0;
 
 Future main() async {
   // 위젯 바인딩 초기화 : 웹뷰와 플러터 엔진과의 상호작용을 위함
@@ -241,8 +241,9 @@ class _MyAppState extends State<MyApp> {
 
                       var endPushSpeed = await controller.evaluateJavascript(
                           source: "JSON.stringify(speedIntervals);");
-                      endPoint =
+                      var temp =
                           await controller.evaluateJavascript(source: "save;");
+                      endPoint = temp ?? 0.0;
                       //debugPrint("endPoint: $endPoint");
                       if (prevUrl.toString().contains("watch?v=")) {
                         // String goChannel = channel ?? "ijoiji";
