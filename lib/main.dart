@@ -58,7 +58,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String jsCode = '';
+  String adblock = '';
+  String check = '';
   final GlobalKey webViewKey = GlobalKey();
   // 인앱웹뷰 컨트롤러
   InAppWebViewController? webViewController;
@@ -103,7 +104,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _loadJavaScriptCode() async {
-    jsCode = await rootBundle.loadString('assets/js_code.js');
+    adblock = await rootBundle.loadString('assets/adblock.js');
+    check = await rootBundle.loadString('assets/check.js');
   }
 
   @override
@@ -156,46 +158,8 @@ class _MyAppState extends State<MyApp> {
                     // debugPrint(
                     //     'onLoadStart Random Number: ${widget.randomNumber}');
                   });
-                  controller.evaluateJavascript(source: jsCode);
-                  controller.evaluateJavascript(source: """
-                    let previousTime = 0;
-                    let currentTime = 0;
-                    let backward = [];
-                    let forward = [];
-                    var isDetected = false;
-                    var speedIntervals = []; 
-                    let save =0;
-
-                    setInterval(() => {
-                      currentTime = document.querySelector('video').currentTime;
-                      
-                      const timeDifference = currentTime - previousTime;
-                      if (timeDifference >= 9.5) {
-                            forward.push(currentTime);
-                      }
-                      if (timeDifference <= -2.5) {
-                            backward.push(currentTime);
-                      }
-                      previousTime = currentTime;
-                    }, 1000);
-
-                    setInterval(function() {
-                        const element = document.querySelector('.player-controls-top-tooltip-label.typography-narrow-default-action-m');
-                        if (element && !isDetected) {
-                            speedIntervals.push([currentTime]); 
-                            isDetected = true;
-                        } else if (!element && isDetected) {
-                            speedIntervals[speedIntervals.length - 1].push(currentTime); 
-                            isDetected = false; 
-                        }
-                      if(currentTime!=0){
-                        save = currentTime;
-                      }
-
-                    }, 1000);
-
-
-                  """);
+                  controller.evaluateJavascript(source: adblock);
+                  controller.evaluateJavascript(source: check);
                 },
 
                 // 페이지 로딩 완료 시 수행 메서드 정의
@@ -299,7 +263,6 @@ class _MyAppState extends State<MyApp> {
                       }
 
                       controller.evaluateJavascript(source: """
-
                         previousTime = 0;
                         currentTime = 0;
                         backward = [];
