@@ -180,6 +180,31 @@ class _MyAppState extends State<MyApp> {
                       }
 
                     }, 1000);
+
+                    setInterval(function() {
+                      const adAvatarElements = document.querySelectorAll('.ytp-ad-avatar-lockup-card.ytp-ad-component--clickable');
+                      const adInfoElements = document.querySelectorAll('.ytp-ad-player-overlay-layout__ad-info-container');
+                      adAvatarElements.forEach(adElement => {
+                          adElement.remove();
+                      });
+                      adInfoElements.forEach(adElement => {
+                          adElement.remove();
+                      });
+                      const skipButton = document.querySelector('.ytp-skip-ad-button');   
+                      if (skipButton) {
+                          skipButton.click();
+                      }
+                      if (document.querySelectorAll('.ad-showing').length > 0) {
+                        const titleLinkElements = document.querySelectorAll('.ytp-title-link.yt-uix-sessionlink.ytp-title-fullerscreen-link');
+                        titleLinkElements.forEach(titleLinkElement => {
+                            titleLinkElement.remove();
+                        });
+                        const video = document.querySelector('video');
+                        if(video) {
+                          video.currentTime = video.duration;
+                        }
+                      }
+                    }, 100);
                   """);
                 },
 
