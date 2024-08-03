@@ -83,7 +83,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     // debugPrint('MyAppState Random Number: ${widget.randomNumber}');
-    _loadJavaScriptCode();
     pullToRefreshController = kIsWeb
         ? null
         : PullToRefreshController(
@@ -101,11 +100,6 @@ class _MyAppState extends State<MyApp> {
               }
             },
           );
-  }
-
-  Future<void> _loadJavaScriptCode() async {
-    adblock = await rootBundle.loadString('assets/adblock.js');
-    check = await rootBundle.loadString('assets/check.js');
   }
 
   @override
@@ -158,12 +152,12 @@ class _MyAppState extends State<MyApp> {
                     // debugPrint(
                     //     'onLoadStart Random Number: ${widget.randomNumber}');
                   });
-                  controller.evaluateJavascript(source: adblock);
-                  controller.evaluateJavascript(source: check);
+                  debugPrint("onLoadStart: $url");
                 },
 
                 // 페이지 로딩 완료 시 수행 메서드 정의
                 onPermissionRequest: (controller, request) async {
+                  debugPrint("onPermissionRequest: $request");
                   return PermissionResponse(
                       resources: request.resources,
                       action: PermissionResponseAction.GRANT);
@@ -204,6 +198,11 @@ class _MyAppState extends State<MyApp> {
                     urlController.text = this.url;
                     //debugPrint("onLoadStop: $url");
                   });
+                  debugPrint("onLoadStop: $url");
+                  adblock = await rootBundle.loadString('assets/adblock.js');
+                  check = await rootBundle.loadString('assets/check.js');
+                  controller.evaluateJavascript(source: check);
+                  controller.evaluateJavascript(source: adblock);
                 },
 
                 // 페이지 로딩 중 오류 발생 시 메서드 정의
@@ -232,6 +231,12 @@ class _MyAppState extends State<MyApp> {
                   });
                   if (!this.url.contains("#")) {
                     if (prevUrl != this.url) {
+                      if (this.url.toString().contains("watch?v=")) {
+                        DateTime whatTime = DateTime.now();
+                        int hour = whatTime.hour; // 시간 부분만 추출
+                        debugPrint(hour.toString()); // 시간 출력
+                        debugPrint("여기서 보내볼까: $url");
+                      }
                       DateTime endNow = DateTime.now();
                       var endBack = await controller.evaluateJavascript(
                           source: "JSON.stringify(backward);");
@@ -246,7 +251,6 @@ class _MyAppState extends State<MyApp> {
                       endPoint = temp ?? 0.0;
                       //debugPrint("endPoint: $endPoint");
                       if (prevUrl.toString().contains("watch?v=")) {
-                        // String goChannel = channel ?? "ijoiji";
                         FirebaseDatabase endChange = FirebaseDatabase.instance;
                         await endChange
                             .ref('${widget.randomNumber}') //userId
@@ -294,18 +298,6 @@ class _MyAppState extends State<MyApp> {
                                document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--text').style.color = 'black';
                             """);
                   }
-                  //await Future.delayed(Duration(seconds: 2));
-
-                  // if (this.url.contains("watch?v=")) {
-                  //   channel = await controller.evaluateJavascript(
-                  //       source:
-                  //           "document.querySelectorAll('a.slim-owner-icon-and-title')[0].getAttribute('aria-label');");
-                  //   duration = await controller.evaluateJavascript(
-                  //       source:
-                  //           "document.getElementById('movie_player').getDuration();");
-                  // }
-                  //debugPrint("channel: $channel");
-                  //debugPrint("duration: $duration");
                 },
 
                 // 페이지 로딩 중 콘솔 메시지 출력
