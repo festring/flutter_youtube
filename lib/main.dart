@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
@@ -11,8 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 String prevUrl = "https://m.youtube.com/";
-List<dynamic> speedList = [];
+// List<dynamic> speedList = [];
 num? endPoint = 0;
+bool isFirstEvaluation = false;
 
 Future main() async {
   // 위젯 바인딩 초기화 : 웹뷰와 플러터 엔진과의 상호작용을 위함
@@ -249,7 +251,8 @@ class _MyAppState extends State<MyApp> {
                       var temp =
                           await controller.evaluateJavascript(source: "save;");
                       endPoint = temp ?? 0.0;
-                      //debugPrint("endPoint: $endPoint");
+                      var speedList = await controller.evaluateJavascript(
+                          source: "JSON.stringify(speedList);");
                       if (prevUrl.toString().contains("watch?v=")) {
                         FirebaseDatabase endChange = FirebaseDatabase.instance;
                         await endChange
@@ -266,7 +269,6 @@ class _MyAppState extends State<MyApp> {
                           "EndPoint": endPoint
                         });
                       }
-
                       controller.evaluateJavascript(source: """
                         previousTime = 0;
                         currentTime = 0;
@@ -274,21 +276,11 @@ class _MyAppState extends State<MyApp> {
                         forward = [];
                         isDetected = false;
                         speedIntervals = []; 
+                        speedList = [];
                         """);
-                      speedList = [];
                     }
-
                     prevUrl = this.url;
 
-                    var speed = await controller.evaluateJavascript(
-                        source:
-                            "document.querySelector('video').playbackRate;");
-                    var time = await controller.evaluateJavascript(
-                        source: "document.querySelector('video').currentTime;");
-                    List<dynamic> speedTime = [speed, time];
-                    speedList.add(speedTime);
-
-                    //ui 조정 코드
                     controller.evaluateJavascript(
                         source:
                             """document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--outline').style.borderColor = 'black';
