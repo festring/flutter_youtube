@@ -6,6 +6,24 @@ var isDetected = false;
 var speedIntervals = []; 
 let save =0;
 
+var iosSpeedList = [];
+let lastPlaybackRate = 1;
+
+function recordSpeed(speed){
+  let speedTime = document.querySelector('video').currentTime;
+  iosSpeedList.push([speed, speedTime]);
+};
+
+setInterval(() => {
+  let currentPlaybackRate = document.querySelector('video').playbackRate;
+  if (Math.abs(currentPlaybackRate - lastPlaybackRate) >= 0.2) {
+    recordSpeed(currentPlaybackRate);
+  }
+  lastPlaybackRate = currentPlaybackRate;
+}, 100);
+
+
+
 setInterval(() => {
   currentTime = document.querySelector('video').currentTime; 
 

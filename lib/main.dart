@@ -239,6 +239,8 @@ class _MyAppState extends State<MyApp> {
                         int hour = whatTime.hour; // 시간 부분만 추출
                         debugPrint(hour.toString()); // 시간 출력
                         debugPrint("영상인 것 만 판별?: $url");
+
+                        ///여기서 서버 통신하고 밑에서 실행하는 걸로
                         controller.evaluateJavascript(source: """
                           startMonitoringVideoTime();
                         """);
@@ -256,6 +258,8 @@ class _MyAppState extends State<MyApp> {
                       var temp =
                           await controller.evaluateJavascript(source: "save;");
                       endPoint = temp ?? 0.0;
+                      var iosSpeedList = await controller.evaluateJavascript(
+                          source: "JSON.stringify(iosSpeedList);");
                       //debugPrint("endPoint: $endPoint");
                       if (prevUrl.toString().contains("watch?v=")) {
                         debugPrint("여기는 보내는 곳");
@@ -267,11 +271,12 @@ class _MyAppState extends State<MyApp> {
                           "URL": prevUrl.toString(),
                           // "Channel": goChannel,
                           // "Duration": duration,
-                          "Speed": speedList.toString(),
+                          "Speed1": speedList.toString(),
                           "Back": endBack,
                           "Forward": endForward,
                           "Dash": endPushSpeed,
-                          "EndPoint": endPoint
+                          "EndPoint": endPoint,
+                          "Speed2": iosSpeedList.toString(),
                         });
                       }
                       debugPrint("여기는 초기화하는곳");
@@ -282,6 +287,7 @@ class _MyAppState extends State<MyApp> {
                         forward = [];
                         isDetected = false;
                         speedIntervals = []; 
+                        iosSpeedList = [];
                         """);
                       speedList = [];
                     }
