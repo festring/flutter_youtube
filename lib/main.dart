@@ -60,6 +60,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String adblock = '';
   String check = '';
+  String control = '';
   final GlobalKey webViewKey = GlobalKey();
   // 인앱웹뷰 컨트롤러
   InAppWebViewController? webViewController;
@@ -201,8 +202,10 @@ class _MyAppState extends State<MyApp> {
                   debugPrint("onLoadStop: $url");
                   adblock = await rootBundle.loadString('assets/adblock.js');
                   check = await rootBundle.loadString('assets/check.js');
+                  control = await rootBundle.loadString('assets/control.js');
                   controller.evaluateJavascript(source: check);
                   controller.evaluateJavascript(source: adblock);
+                  controller.evaluateJavascript(source: control);
                 },
 
                 // 페이지 로딩 중 오류 발생 시 메서드 정의
@@ -235,8 +238,12 @@ class _MyAppState extends State<MyApp> {
                         DateTime whatTime = DateTime.now();
                         int hour = whatTime.hour; // 시간 부분만 추출
                         debugPrint(hour.toString()); // 시간 출력
-                        debugPrint("여기서 보내볼까: $url");
+                        debugPrint("영상인 것 만 판별?: $url");
+                        controller.evaluateJavascript(source: """
+                          startMonitoringVideoTime();
+                        """);
                       }
+                      debugPrint("여기는 취합하는 곳");
                       DateTime endNow = DateTime.now();
                       var endBack = await controller.evaluateJavascript(
                           source: "JSON.stringify(backward);");
@@ -251,6 +258,7 @@ class _MyAppState extends State<MyApp> {
                       endPoint = temp ?? 0.0;
                       //debugPrint("endPoint: $endPoint");
                       if (prevUrl.toString().contains("watch?v=")) {
+                        debugPrint("여기는 보내는 곳");
                         FirebaseDatabase endChange = FirebaseDatabase.instance;
                         await endChange
                             .ref('${widget.randomNumber}') //userId
@@ -266,7 +274,7 @@ class _MyAppState extends State<MyApp> {
                           "EndPoint": endPoint
                         });
                       }
-
+                      debugPrint("여기는 초기화하는곳");
                       controller.evaluateJavascript(source: """
                         previousTime = 0;
                         currentTime = 0;
