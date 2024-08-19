@@ -21,11 +21,11 @@ function controlRate() {
                         setTimeout(function() {
                             document.querySelector('video').playbackRate = 1.0;
                             increasePlaybackRate();
-                        }, 10); 
+                        }, 10); //조정
                     } 
-                }, 50); 
+                }, 30); //조정
             }
-        }, 50);
+        }, 20);//조정
     } 
 }
 
@@ -44,9 +44,12 @@ function increasePlaybackRate() {
     increase();
 }
 
-function startMonitoringVideoTime(threshold = 1, interval = 1000) {
+function startMonitoringVideoTime(threshold = 0.11, interval = 100) {
     const intervalId = setInterval(function() {
-        if (document.querySelector('video').currentTime >= threshold) {
+        const videoElement = document.querySelector('video');
+        const settingsIcon = document.querySelector('.icon-button.player-settings-icon');
+
+        if (videoElement && videoElement.currentTime >= threshold && settingsIcon) {
             controlRate();
             clearInterval(intervalId);
         }
@@ -54,4 +57,5 @@ function startMonitoringVideoTime(threshold = 1, interval = 1000) {
 
     return intervalId;  // intervalId를 반환하여 필요 시 외부에서 제어 가능하게 함
 }
+
 

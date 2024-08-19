@@ -305,11 +305,11 @@ class _MyAppState extends State<MyApp> {
                     //ui 조정 코드
                     controller.evaluateJavascript(
                         source:
-                            """document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--outline').style.borderColor = 'black';
-                               document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--outline').style.color = 'black';
+                            """document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--outline').style.borderColor = 'transparent';
+                               document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--outline').style.color = 'transparent';
                                document.querySelector('.ytp-unmute-box').click();
                                document.querySelector('.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button').style.width = '0';
-                               document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--text').style.color = 'black';
+                               document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--text').style.color = 'transparent';
                             """);
                   }
                 },
