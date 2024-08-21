@@ -28,6 +28,9 @@ Future main() async {
   } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {}
 
   runApp(MaterialApp(
+    theme: ThemeData.light(), // 라이트 테마
+    darkTheme: ThemeData.dark(), // 다크 테마
+    themeMode: ThemeMode.system, // 시스템 모드에 따라 테마 변경
     home: MyApp(randomNumber: randomNumber),
   ));
 }
@@ -101,6 +104,28 @@ class _MyAppState extends State<MyApp> {
               }
             },
           );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _setStatusBarColor(); // 의존성 변경 시 상태바 색상을 업데이트
+  }
+
+  void _setStatusBarColor() {
+    // 현재 테마의 밝기 (라이트 모드 또는 다크 모드) 가져오기
+    final Brightness brightness = Theme.of(context).brightness;
+
+    // 상태바의 색상과 아이콘 밝기를 설정
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: brightness == Brightness.light
+          ? Colors.white
+          : Colors.black, // 라이트 모드면 흰색, 다크 모드면 검정색
+      statusBarIconBrightness: brightness == Brightness.light
+          ? Brightness.dark
+          : Brightness.light, // 아이콘 색상 설정
+      statusBarBrightness: brightness, // iOS에서 상태바 아이콘 색상을 설정하는 데 사용
+    ));
   }
 
   @override
