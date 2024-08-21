@@ -326,7 +326,6 @@ class _MyAppState extends State<MyApp> {
                         source: "document.querySelector('video').currentTime;");
                     List<dynamic> speedTime = [speed, time];
                     speedList.add(speedTime);
-
                     //ui 조정 코드
                     controller.evaluateJavascript(
                         source:
@@ -336,6 +335,23 @@ class _MyAppState extends State<MyApp> {
                                document.querySelector('.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button').style.width = '0';
                                document.querySelector('.yt-spec-button-shape-next--overlay.yt-spec-button-shape-next--text').style.color = 'transparent';
                             """);
+                    //ui 조정 코드
+                    final brightness = Theme.of(context).brightness;
+                    if (brightness == Brightness.light) {
+                      // 라이트 모드일 때만 실행할 코드
+                      controller.evaluateJavascript(source: """
+                            document.querySelectorAll('ytm-mobile-topbar-renderer.sticky-player').forEach(function(element) {
+                              if (element.getAttribute('ambient-topbar') === 'true') {
+                                element.style.backgroundColor = 'white'; 
+                              }
+                            });
+                            document.querySelectorAll('.mobile-topbar-logo.ringo-logo, .logo-in-player.ringo-logo').forEach(function(element) {
+                                element.style.color = '#000000';
+                            });
+                            document.querySelector('.mobile-topbar-header-content.non-search-mode.cbox').style.color = '#000000';
+                            document.querySelector('.mobile-topbar-header[data-mode="watch"]').style.backgroundColor = '#ffffff'; 
+                            """);
+                    }
                   }
                 },
 
