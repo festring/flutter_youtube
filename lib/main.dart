@@ -9,10 +9,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 String prevUrl = "https://m.youtube.com/";
 List<dynamic> speedList = [];
 num? endPoint = 0;
+List<int> saveResult = [1, -1, -1];
 
 Future main() async {
   // 위젯 바인딩 초기화 : 웹뷰와 플러터 엔진과의 상호작용을 위함
@@ -49,6 +52,24 @@ Future<void> initializeRandomNumber() async {
 Future<int> getRandomNumber() async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getInt('random_number') ?? 0;
+}
+
+Future<List<int>> fetchRandomResult() async {
+  try {
+    final response =
+        await http.get(Uri.parse('http://163.180.160.143:5000/random'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<int> randomResult = List<int>.from(data['random_numbers']);
+      return randomResult;
+    } else {
+      return [1, -1, -1];
+    }
+  } catch (e) {
+    debugPrint('Error occurred: $e');
+    return [1, -1, -1];
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -257,6 +278,7 @@ class _MyAppState extends State<MyApp> {
                     this.url = url.toString();
                     urlController.text = this.url;
                   });
+
                   if (!this.url.contains("#")) {
                     if (prevUrl != this.url) {
                       if (this.url.toString().contains("watch?v=")) {
@@ -266,9 +288,20 @@ class _MyAppState extends State<MyApp> {
                         debugPrint("영상인 것 만 판별?: $url");
 
                         ///여기서 서버 통신하고 밑에서 실행하는 걸로
+                        fetchRandomResult().then((randomResult) {
+                          saveResult = randomResult;
+
+                          if (randomResult.length == 3) {
+                            debugPrint('First Number: ${randomResult[0]}');
+                            debugPrint('Second Number: ${randomResult[1]}');
+                            debugPrint('Third Number: ${randomResult[2]}');
+                          }
+                        });
+                        //여기에 saveResult[0]이 1이면 실행하고 아니면 실행하지 않게
                         controller.evaluateJavascript(source: """
                           startMonitoringVideoTime();
                         """);
+                        //느릴 경우 대비해서  예외처리 배열 만들기
                       }
                       debugPrint("여기는 취합하는 곳");
                       DateTime endNow = DateTime.now();
@@ -302,6 +335,9 @@ class _MyAppState extends State<MyApp> {
                           "Dash": endPushSpeed,
                           "EndPoint": endPoint,
                           "Speed2": iosSpeedList.toString(),
+                          "Control": saveResult[0],
+                          "OCR": saveResult[1],
+                          "Speech": saveResult[2]
                         });
                       }
                       debugPrint("여기는 초기화하는곳");
