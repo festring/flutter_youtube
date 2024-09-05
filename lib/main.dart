@@ -85,6 +85,7 @@ class _MyAppState extends State<MyApp> {
   String adblock = '';
   String check = '';
   String control = '';
+  String dash = '';
   final GlobalKey webViewKey = GlobalKey();
   // 인앱웹뷰 컨트롤러
   InAppWebViewController? webViewController;
@@ -249,9 +250,11 @@ class _MyAppState extends State<MyApp> {
                   adblock = await rootBundle.loadString('assets/adblock.js');
                   check = await rootBundle.loadString('assets/check.js');
                   control = await rootBundle.loadString('assets/control.js');
+                  dash = await rootBundle.loadString('assets/dash.js');
                   controller.evaluateJavascript(source: check);
                   controller.evaluateJavascript(source: adblock);
                   controller.evaluateJavascript(source: control);
+                  controller.evaluateJavascript(source: dash);
                 },
 
                 // 페이지 로딩 중 오류 발생 시 메서드 정의

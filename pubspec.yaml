@@ -34,3 +34,4 @@ flutter:
     - assets/adblock.js
     - assets/check.js
     - assets/control.js
+    - assets/dash.js
