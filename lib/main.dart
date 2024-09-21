@@ -54,21 +54,30 @@ Future<int> getRandomNumber() async {
   return prefs.getInt('random_number') ?? 0;
 }
 
-Future<List<int>> fetchRandomResult() async {
+Future<List<int>> sendPostRequest(String userId, String url) async {
+  final apiUrl = Uri.parse('http://0.0.0.0:5000/process'); //163.180.160.143
   try {
-    final response =
-        await http.get(Uri.parse('http://163.180.160.143:5000/random'));
+    // POST 요청 보내기
+    final response = await http.post(
+      apiUrl,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({'user_id': userId, "url": url}),
+    );
 
+    // 서버로부터 성공적인 응답을 받았는지 확인
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      List<int> randomResult = List<int>.from(data['random_numbers']);
-      return randomResult;
+      // 서버에서 받은 응답 처리
+      final List<dynamic> responseData = jsonDecode(response.body);
+
+      // 받은 응답을 List<int>로 변환하여 반환
+      return responseData.map((item) => item as int).toList();
     } else {
-      return [1, -1, -1];
+      // 실패한 경우 기본 값 반환
+      return [1, 0, 0, 0];
     }
   } catch (e) {
-    debugPrint('Error occurred: $e');
-    return [1, -1, -1];
+    // 오류 발생 시 기본 값 반환
+    return [1, 0, 0, 0];
   }
 }
 
@@ -290,19 +299,26 @@ class _MyAppState extends State<MyApp> {
                         debugPrint(hour.toString()); // 시간 출력
                         debugPrint("영상인 것 만 판별?: $url");
 
-                        ///여기서 서버 통신하고 밑에서 실행하는 걸로
-                        fetchRandomResult().then((randomResult) {
-                          saveResult = randomResult;
+                        //시작배속 무조건 1로 초기화
+                        controller.evaluateJavascript(
+                            source:
+                                "document.querySelector('video').playbackRate = 1.0;");
 
-                          if (randomResult.length == 3) {
-                            debugPrint('First Number: ${randomResult[0]}');
-                            debugPrint('Second Number: ${randomResult[1]}');
-                            debugPrint('Third Number: ${randomResult[2]}');
+                        ///여기서 서버 통신하고 밑에서 실행하는 걸로
+                        sendPostRequest(
+                                '${widget.randomNumber}', this.url.toString())
+                            .then((result) {
+                          saveResult = result;
+
+                          if (result.length == 4) {
+                            debugPrint('First Number: ${result[0]}');
+                            debugPrint('Second Number: ${result[1]}');
+                            debugPrint('Third Number: ${result[2]}');
+                            debugPrint('Fourth Number: ${result[3]}');
                           }
                         });
-                        //여기에 saveResult[0]이 1이면 실행하고 아니면 실행하지 않게
                         controller.evaluateJavascript(source: """
-                          startMonitoringVideoTime();
+                          startMonitoringVideoTime(${saveResult[0]});
                         """);
                         //느릴 경우 대비해서  예외처리 배열 만들기
                       }

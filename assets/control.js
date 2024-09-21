@@ -1,4 +1,4 @@
-function controlRate() {
+function controlRate(up) {
     var settingsButton = document.querySelector('.icon-button.player-settings-icon');
     if (settingsButton) {
         settingsButton.click();
@@ -17,23 +17,24 @@ function controlRate() {
                 setTimeout(function() {
                     var subElements = document.getElementsByClassName('yt-list-item-view-model-wiz');
                     if (subElements.length > 1) {
-                        subElements[5].click();  // 일반적으로 1.0배속 위치
+                        subElements[5].click();  // 선택한 배속으로 보이게 하는 설정
                         setTimeout(function() {
-                            document.querySelector('video').playbackRate = 1.0;
-                            increasePlaybackRate();
+                            document.querySelector('video').playbackRate = 1.0; //시작배속 무조건 1배속 옮길까
+                            increasePlaybackRate(up);
                         }, 10); //조정
                     } 
-                }, 30); //조정
+                }, 50); //조정
             }
         }, 20);//조정
     } 
 }
 
-function increasePlaybackRate() {
+function increasePlaybackRate(up) {
     const video = document.querySelector('video');
     let playbackRate = 1.0;  // 무조건 1.0에서 시작
+    value= parseFloat(up);
     function increase() {
-        if (playbackRate <= 1.5) {
+        if (playbackRate <= value) {
             if (Math.abs(video.playbackRate - playbackRate) < 0.1) {
                 video.playbackRate = playbackRate;
                 playbackRate += 0.01;
@@ -44,13 +45,13 @@ function increasePlaybackRate() {
     increase();
 }
 
-function startMonitoringVideoTime(threshold = 0.11, interval = 100) {
+function startMonitoringVideoTime(up,threshold = 0.11, interval = 100) {
     const intervalId = setInterval(function() {
         const videoElement = document.querySelector('video');
         const settingsIcon = document.querySelector('.icon-button.player-settings-icon');
 
         if (videoElement && videoElement.currentTime >= threshold && settingsIcon) {
-            controlRate();
+            controlRate(up);
             clearInterval(intervalId);
         }
     }, interval);
