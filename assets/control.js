@@ -15,9 +15,19 @@ function controlRate(up) {
             if (targetElement) {
                 targetElement.click(); 
                 setTimeout(function() {
+                    var speedText = String(up);  // 파라미터를 문자열로 변환
                     var subElements = document.getElementsByClassName('yt-list-item-view-model-wiz');
-                    if (subElements.length > 1) {
-                        subElements[5].click();  // 선택한 배속으로 보이게 하는 설정
+                    if (subElements.length > 1) {// 이조건 없애기
+                        if (speedText === '1') {
+                            speedText = '보통';
+                        }
+                        for (var i = 0; i < subElements.length; i++) {
+                            // innerText가 문자열인지 확인하고, 공백을 제거한 후 비교
+                            if (subElements[i].innerText.trim() === speedText) {
+                                subElements[i].click();  // 조건에 맞는 요소 클릭
+                                break;  // 원하는 요소를 클릭한 후 루프 종료
+                            }
+                        }
                         setTimeout(function() {
                             document.querySelector('video').playbackRate = 1.0; //시작배속 무조건 1배속 옮길까
                             increasePlaybackRate(up);
