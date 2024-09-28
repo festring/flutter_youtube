@@ -17,22 +17,32 @@ function controlRate(up) {
                 setTimeout(function() {
                     var speedText = String(up);  // 파라미터를 문자열로 변환
                     var subElements = document.getElementsByClassName('yt-list-item-view-model-wiz');
-                    if (subElements.length > 1) {// 이조건 없애기
+                    
+                    // 요소가 존재하는지 확인
+                    if (subElements.length > 0) {
                         if (speedText === '1') {
                             speedText = '보통';
                         }
-                        for (var i = 0; i < subElements.length; i++) {
-                            // innerText가 문자열인지 확인하고, 공백을 제거한 후 비교
-                            if (subElements[i].innerText.trim() === speedText) {
-                                subElements[i].click();  // 조건에 맞는 요소 클릭
-                                break;  // 원하는 요소를 클릭한 후 루프 종료
-                            }
+                    } else {
+                        // 요소가 없으면 다른 클래스 사용
+                        subElements = document.getElementsByClassName('yt-spec-button-shape-next__button-text-content');
+                        speedText += 'x';  // speedText 뒤에 "x" 추가
+                    }
+                    
+                    // subElements에 있는 요소들을 순회하며 비교
+                    for (var i = 0; i < subElements.length; i++) {
+                        // innerText가 문자열인지 확인하고, 공백을 제거한 후 비교
+                        if (subElements[i].innerText.trim() === speedText) {
+                            subElements[i].click();  // 조건에 맞는 요소 클릭
+                            break;  // 원하는 요소를 클릭한 후 루프 종료
                         }
-                        setTimeout(function() {
-                            document.querySelector('video').playbackRate = 1.0; //시작배속 무조건 1배속 옮길까
-                            increasePlaybackRate(up);
-                        }, 10); //조정
-                    } 
+                    }                    
+                    
+                    setTimeout(function() {
+                        document.querySelector('video').playbackRate = 1.0; //시작배속 무조건 1배속 옮길까
+                        increasePlaybackRate(up);
+                    }, 10); //조정
+                     
                 }, 50); //조정
             }
         }, 20);//조정
