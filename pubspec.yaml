@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.2.3
-  flutter_inappwebview: ^6.0.0
+  flutter_inappwebview: ^6.1.2
   url_launcher:
   flutter_native_splash: ^2.3.10
   device_info_plus: ^9.1.2

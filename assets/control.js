@@ -43,7 +43,7 @@ function controlRate(up) {
                         increasePlaybackRate(up);
                     }, 10); //조정
                      
-                }, 50); //조정
+                }, 80); //조정
             }
         }, 20);//조정
     } 

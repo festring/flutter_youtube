@@ -170,13 +170,17 @@ class _MyAppState extends State<MyApp> {
     // 자바스크립트 실행
     debugPrint("sendPostRequestAndUpdateJavascript: $saveResult");
     if (webViewController != null) {
+      debugPrint("1번 구역 진입");
       if (saveResult[3] > 0) {
+        debugPrint("22번 구역 진입");
         debugPrint(this.url.toString());
         if (saveResult[4] == this.url.toString()) {
+          debugPrint("333번 구역 진입");
           var checkspeed = await webViewController!.evaluateJavascript(
               source: "document.querySelector('video').playbackRate;");
-
-          if (checkspeed.toString() == "1") {
+          debugPrint("checkspeed: $checkspeed");
+          if (checkspeed.toString() == "1" || checkspeed.toString() == "1.0") {
+            debugPrint("4444번 구역 진입");
             webViewController!.evaluateJavascript(source: """
           startMonitoringVideoTime(${saveResult[0]});
         """);
