@@ -165,6 +165,20 @@ class _MyAppState extends State<MyApp> {
 
   // 비동기적으로 서버 요청을 보내고 결과를 처리하는 함수
   void sendPostRequestAndUpdateJavascript(String userId, String url) async {
+    // 비디오가 로드되면 시작 배속을 1로 설정
+    await webViewController!.evaluateJavascript(source: """
+      (function() {
+        const intervalId = setInterval(() => {
+          const video = document.querySelector('video');
+          if (video) {
+            if (video.currentTime >= 1) {
+              video.playbackRate = 1;
+              clearInterval(intervalId);
+            }
+          }
+        }, 10);
+      })();
+    """);
     // 서버로부터 받은 값을 전역 변수 saveResult에 바로 저장
     saveResult = await sendPostRequest(userId, url);
     // 자바스크립트 실행
@@ -242,19 +256,19 @@ class _MyAppState extends State<MyApp> {
                     //     'onLoadStart Random Number: ${widget.randomNumber}');
                   });
                   debugPrint("onLoadStart: $url");
-                  controller.evaluateJavascript(source: """
-                    function startInterval() {
-                      const intervalId = setInterval(() => {
-                        const video = document.querySelector('video');
-                        if (video) {
-                          if (video.currentTime >= 1) {
-                            video.playbackRate = 1;
-                            clearInterval(intervalId);
-                          }
-                        }
-                      }, 10); 
-                    }
-                  """);
+                  // controller.evaluateJavascript(source: """
+                  //   function startInterval() {
+                  //     const intervalId = setInterval(() => {
+                  //       const video = document.querySelector('video');
+                  //       if (video) {
+                  //         if (video.currentTime >= 1) {
+                  //           video.playbackRate = 1;
+                  //           clearInterval(intervalId);
+                  //         }
+                  //       }
+                  //     }, 10);
+                  //   }
+                  // """);
                 },
 
                 // 페이지 로딩 완료 시 수행 메서드 정의
@@ -346,8 +360,8 @@ class _MyAppState extends State<MyApp> {
                         debugPrint("영상인 것 만 판별?: $url");
 
                         //시작배속 무조건 1로 초기화
-                        controller.evaluateJavascript(
-                            source: "startInterval();");
+                        // controller.evaluateJavascript(
+                        //     source: "startInterval();");
 
                         ///여기서 서버 통신하고 밑에서 실행하는 걸로
                         sendPostRequestAndUpdateJavascript(
