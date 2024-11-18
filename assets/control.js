@@ -1,4 +1,4 @@
-function controlRate(up) {
+function controlRate(tap, cycle, up) {
     var settingsButton = document.querySelector('.icon-button.player-settings-icon');
     if (settingsButton) {
         settingsButton.click();
@@ -40,7 +40,7 @@ function controlRate(up) {
                     
                     setTimeout(function() {
                         document.querySelector('video').playbackRate = 1.0; //시작배속 무조건 1배속 옮길까
-                        increasePlaybackRate(up);
+                        increasePlaybackRate(tap, cycle, up);
                     }, 10); //조정
                      
                 }, 80); //조정
@@ -49,29 +49,40 @@ function controlRate(up) {
     } 
 }
 
-function increasePlaybackRate(up) {
+//어차피 랩실험에서는 목표 배속까지 무조건 증가시키는게 중요, 사용자가 변환하든 말든,변환하면 그거 기록하면 되니깐
+function increasePlaybackRate(tap, cycle, up) {
     const video = document.querySelector('video');
-    let playbackRate = 1.0;  // 무조건 1.0에서 시작
-    value= parseFloat(up);
+    if (!video) {
+        console.error("Video element not found!");
+        return;
+    }
+
+    let playbackRate = 1.0; // 항상 1.0에서 시작
+    const valueTap = parseFloat(tap);  // step 크기
+    const valueCycle = parseFloat(cycle) * 1000; // 밀리초 변환
+    const valueUp = parseFloat(up);  // 목표 배속
+
     function increase() {
-        if (playbackRate <= value) {
-            if (Math.abs(video.playbackRate - playbackRate) < 0.1) {
-                video.playbackRate = playbackRate;
-                playbackRate += 0.01;
-                setTimeout(increase, 100); 
-            }
+        if (playbackRate <= valueUp) {
+            video.playbackRate = playbackRate;
+            playbackRate += valueTap;
+            setTimeout(increase, valueCycle); // 재귀적으로 호출
         }
     }
     increase();
 }
 
-function startMonitoringVideoTime(up,threshold = 0.11, interval = 100) {
+
+function startMonitoringVideoTime(tap, cycle, up,threshold = 0.11, interval = 100) {
     const intervalId = setInterval(function() {
         const videoElement = document.querySelector('video');
         const settingsIcon = document.querySelector('.icon-button.player-settings-icon');
 
         if (videoElement && videoElement.currentTime >= threshold && settingsIcon) {
-            controlRate(up);
+            setTimeout(function() {
+                document.querySelector('video').playbackRate = 1.0; //시작배속 무조건 1배속 옮길까
+                increasePlaybackRate(tap, cycle, up);
+            }, 10); //조정
             clearInterval(intervalId);
         }
     }, interval);

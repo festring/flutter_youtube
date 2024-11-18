@@ -15,7 +15,7 @@ import 'dart:convert';
 String prevUrl = "https://m.youtube.com/";
 List<dynamic> speedList = [];
 num? endPoint = 0;
-List<dynamic> saveResult = [1, 0, 0, 0, "0"];
+List<dynamic> saveResult = [0, 1, 1, "0"];
 
 Future main() async {
   // 위젯 바인딩 초기화 : 웹뷰와 플러터 엔진과의 상호작용을 위함
@@ -57,7 +57,7 @@ Future<int> getRandomNumber() async {
 Future<List<dynamic>> sendPostRequest(String userId, String url) async {
   final apiUrl =
       Uri.parse('http://163.180.160.143:5000/process'); // 실제 서버 IP 주소로 변경
-  final List<dynamic> defaultResult = [1, 0, 0, 0, "0"]; // 기본 배열
+  final List<dynamic> defaultResult = [0, 1, 1, "0"]; // 기본 배열
 
   try {
     // POST 요청 보내기
@@ -185,10 +185,10 @@ class _MyAppState extends State<MyApp> {
     debugPrint("sendPostRequestAndUpdateJavascript: $saveResult");
     if (webViewController != null) {
       debugPrint("1번 구역 진입");
-      if (saveResult[3] > 0) {
+      if (saveResult[2] > 0) {
         debugPrint("22번 구역 진입");
         debugPrint(this.url.toString());
-        if (saveResult[4] == this.url.toString()) {
+        if (this.url.toString().contains(saveResult[3])) {
           debugPrint("333번 구역 진입");
           var checkspeed = await webViewController!.evaluateJavascript(
               source: "document.querySelector('video').playbackRate;");
@@ -196,7 +196,7 @@ class _MyAppState extends State<MyApp> {
           if (checkspeed.toString() == "1" || checkspeed.toString() == "1.0") {
             debugPrint("4444번 구역 진입");
             webViewController!.evaluateJavascript(source: """
-          startMonitoringVideoTime(${saveResult[0]});
+          startMonitoringVideoTime(${saveResult[0]}, ${saveResult[1]}, ${saveResult[2]});
         """);
           }
         }
@@ -400,12 +400,11 @@ class _MyAppState extends State<MyApp> {
                           "Dash": endPushSpeed,
                           "EndPoint": endPoint,
                           "Speed2": iosSpeedList.toString(),
-                          "Control": saveResult[0],
-                          "OCR": saveResult[1],
-                          "Speech": saveResult[2],
-                          "Analyze": saveResult[3],
+                          "Tap": saveResult[0],
+                          "Cycle": saveResult[1],
+                          "Up": saveResult[2]
                         });
-                        saveResult = [1, 0, 0, 0, "0"]; //초기ㅗ하 시점 확인하기
+                        saveResult = [0, 1, 1, "0"]; //초기ㅗ하 시점 확인하기
                       }
                       debugPrint("여기는 초기화하는곳");
                       controller.evaluateJavascript(source: """
