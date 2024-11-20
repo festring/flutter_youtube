@@ -187,7 +187,7 @@ class _MyAppState extends State<MyApp> {
       debugPrint(this.url.toString());
       if (this.url.toString().contains(saveResult[2])) {
         if (saveResult[0].toString() == "0") {
-          if (saveResult[1] != []) {
+          if (saveResult[2] != "0") {
             debugPrint("4444번 구역 진입");
             webViewController!.evaluateJavascript(source: """
           startMonitoringVideoTime(${saveResult[1][0]}, ${saveResult[1][1]}, ${saveResult[1][2]});
@@ -322,6 +322,7 @@ class _MyAppState extends State<MyApp> {
                   controller.evaluateJavascript(source: adblock);
                   controller.evaluateJavascript(source: control);
                   controller.evaluateJavascript(source: dash);
+                  // controller.evaluateJavascript(source: "let touchlist = [];");
                 },
 
                 // 페이지 로딩 중 오류 발생 시 메서드 정의
@@ -382,6 +383,8 @@ class _MyAppState extends State<MyApp> {
                       endPoint = temp ?? 0.0;
                       var iosSpeedList = await controller.evaluateJavascript(
                           source: "JSON.stringify(iosSpeedList);");
+                      var touchList = await controller.evaluateJavascript(
+                          source: "JSON.stringify(touchlist);");
                       //debugPrint("endPoint: $endPoint");
                       if (prevUrl.toString().contains("watch?v=")) {
                         debugPrint("여기는 보내는 곳");
@@ -399,9 +402,10 @@ class _MyAppState extends State<MyApp> {
                           "Dash": endPushSpeed,
                           "EndPoint": endPoint,
                           "Speed2": iosSpeedList.toString(),
-                          "Control": saveResult[1].toString()
+                          "Control": saveResult[1].toString(),
+                          "Touch": touchList.toString()
                         });
-                        saveResult = [0, 1, 1, "0"]; //초기ㅗ하 시점 확인하기
+                        // saveResult = [0, [], "0"]; //초기ㅗ하 시점 확인하기
                       }
                       debugPrint("여기는 초기화하는곳");
                       controller.evaluateJavascript(source: """
@@ -412,6 +416,7 @@ class _MyAppState extends State<MyApp> {
                         isDetected = false;
                         speedIntervals = []; 
                         iosSpeedList = [];
+                        touchlist = [];
                         """);
                       speedList = [];
                     }
@@ -451,6 +456,11 @@ class _MyAppState extends State<MyApp> {
                             document.querySelector('.mobile-topbar-header[data-mode="watch"]').style.backgroundColor = '#ffffff'; 
                             """);
                     }
+
+                    Future.delayed(Duration(seconds: 2), () {
+                      controller.evaluateJavascript(
+                          source: "initializePlaybackRateButton(); ");
+                    });
                   }
                 },
 
