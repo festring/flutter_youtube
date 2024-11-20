@@ -15,7 +15,7 @@ import 'dart:convert';
 String prevUrl = "https://m.youtube.com/";
 List<dynamic> speedList = [];
 num? endPoint = 0;
-List<dynamic> saveResult = [0, 1, 1, "0"];
+List<dynamic> saveResult = [0, [], "0"];
 
 Future main() async {
   // 위젯 바인딩 초기화 : 웹뷰와 플러터 엔진과의 상호작용을 위함
@@ -184,11 +184,9 @@ class _MyAppState extends State<MyApp> {
     // 자바스크립트 실행
     debugPrint("sendPostRequestAndUpdateJavascript: $saveResult");
     if (webViewController != null) {
-      debugPrint("1번 구역 진입");
-      if (saveResult[2] > 0) {
-        debugPrint("22번 구역 진입");
-        debugPrint(this.url.toString());
-        if (this.url.toString().contains(saveResult[3])) {
+      debugPrint(this.url.toString());
+      if (this.url.toString().contains(saveResult[2])) {
+        if (saveResult[0].toString() == "0") {
           debugPrint("333번 구역 진입");
           var checkspeed = await webViewController!.evaluateJavascript(
               source: "document.querySelector('video').playbackRate;");
@@ -196,9 +194,14 @@ class _MyAppState extends State<MyApp> {
           if (checkspeed.toString() == "1" || checkspeed.toString() == "1.0") {
             debugPrint("4444번 구역 진입");
             webViewController!.evaluateJavascript(source: """
-          startMonitoringVideoTime(${saveResult[0]}, ${saveResult[1]}, ${saveResult[2]});
+          startMonitoringVideoTime(${saveResult[1][0]}, ${saveResult[1][1]}, ${saveResult[1][2]});
         """);
           }
+        } else {
+          debugPrint("5555번 구역 진입");
+          webViewController!.evaluateJavascript(source: """
+          setPlaybackRates(${saveResult[1]});
+        """);
         }
       }
     }
@@ -400,9 +403,7 @@ class _MyAppState extends State<MyApp> {
                           "Dash": endPushSpeed,
                           "EndPoint": endPoint,
                           "Speed2": iosSpeedList.toString(),
-                          "Tap": saveResult[0],
-                          "Cycle": saveResult[1],
-                          "Up": saveResult[2]
+                          "Control": saveResult[1].toString()
                         });
                         saveResult = [0, 1, 1, "0"]; //초기ㅗ하 시점 확인하기
                       }
