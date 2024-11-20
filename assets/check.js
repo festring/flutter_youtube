@@ -81,7 +81,7 @@ function initializePlaybackRateButton() {
   playbackRateButton.addEventListener('click', () => {
     const video = document.querySelector('video');
     if (video) {
-      const playbackRate = video.playbackRate.toFixed(1); // 배속 값을 소수점 1자리로 표시
+      const playbackRate = video.playbackRate.toFixed(2); // 배속 값을 소수점 2자리로 표시
       const currentTime = video.currentTime.toFixed(2); // 현재 시간 값을 소수점 2자리로 표시
 
       // 버튼 텍스트 업데이트

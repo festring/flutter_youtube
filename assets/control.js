@@ -1,4 +1,8 @@
 //어차피 랩실험에서는 목표 배속까지 무조건 증가시키는게 중요, 사용자가 변환하든 말든,변환하면 그거 기록하면 되니깐
+let isIncreasing = false; // 실행 상태를 추적하는 플래그 변수
+let currentController = null;
+
+
 function increasePlaybackRate(tap, cycle, up) {
     const video = document.querySelector('video');
     if (!video) {
@@ -11,14 +15,27 @@ function increasePlaybackRate(tap, cycle, up) {
     const valueCycle = parseFloat(cycle) * 1000; // 밀리초 변환
     const valueUp = parseFloat(up);  // 목표 배속
 
+    isIncreasing = true; // 실행 시작 시 플래그를 활성화
+
     function increase() {
+        if (!isIncreasing) {
+            return; // 실행 중단
+        }
+
         if (playbackRate <= valueUp) {
             video.playbackRate = playbackRate;
             playbackRate += valueTap;
             setTimeout(increase, valueCycle); // 재귀적으로 호출
+        } else {
+            isIncreasing = false; // 목표 배속 도달 시 중지
         }
     }
     increase();
+}
+
+// 실행 정지 함수
+function stopIncreasePlaybackRate() {
+    isIncreasing = false; // 플래그를 비활성화하여 실행 중단
 }
 
 
@@ -29,6 +46,7 @@ function startMonitoringVideoTime(tap, cycle, up,threshold = 0.11, interval = 10
 
         if (videoElement && videoElement.currentTime >= threshold && settingsIcon) {
             setTimeout(function() {
+                stopIncreasePlaybackRate(); // 기존 배속 증가 중단
                 document.querySelector('video').playbackRate = 1.0; //시작배속 무조건 1배속 옮길까
                 increasePlaybackRate(tap, cycle, up);
             }, 10); //조정
@@ -39,49 +57,61 @@ function startMonitoringVideoTime(tap, cycle, up,threshold = 0.11, interval = 10
     return intervalId;  // intervalId를 반환하여 필요 시 외부에서 제어 가능하게 함
 }
 
-
 function setPlaybackRates(schedule) {
-    const video = document.querySelector('video');
-    if (!video) {
-      console.error('비디오 요소를 찾을 수 없습니다.');
-      return;
-    }
-  
-    // 재생 시간과 배속을 시간 순으로 정렬
-    schedule.sort((a, b) => a[0] - b[0]);
-  
-    let currentIndex = 0;
-  
-    function applyNextRate() {
-      if (currentIndex >= schedule.length) return; // 모든 설정 완료
-  
-      const [targetTime, playbackRate] = schedule[currentIndex];
-      const currentTime = video.currentTime;
-  
-      if (currentTime >= targetTime) {
-        // 현재 시간이 설정 시간 이상이면 배속 변경
-        video.playbackRate = playbackRate;
-        console.log(`배속 변경: ${playbackRate}x at ${currentTime.toFixed(2)}초`);
-        currentIndex++;
-        applyNextRate(); // 다음 설정으로 이동
-      } else {
-        // 다음 설정까지 대기
-        setTimeout(applyNextRate, 100); // 100ms 후 재시도
-      }
-    }
-  
-    // 비디오 재생 상태 변화 감지 및 시작
-    video.addEventListener('play', () => {
-      applyNextRate();
-    });
-  
-    // 현재 시간이 배열의 첫 번째 시간 이후일 경우만 적용
-    if (!video.paused) {
-      applyNextRate();
+  const video = document.querySelector('video');
+  if (!video) {
+    console.error('비디오 요소를 찾을 수 없습니다.');
+    return;
+  }
+
+  schedule.sort((a, b) => a[0] - b[0]);
+
+  let currentIndex = 0;
+  let timerId = null; // 타이머 ID 저장
+  let isStopped = false; // 정지 상태 플래그
+
+  function applyNextRate() {
+    if (currentIndex >= schedule.length || isStopped) return; // 모든 설정 완료 또는 정지 상태
+
+    const [targetTime, playbackRate] = schedule[currentIndex];
+    const currentTime = video.currentTime;
+
+    if (currentTime >= targetTime) {
+      video.playbackRate = playbackRate;
+      console.log(`배속 변경: ${playbackRate}x at ${currentTime.toFixed(2)}초`);
+      currentIndex++;
+      applyNextRate(); // 다음 설정으로 이동
+    } else {
+      timerId = setTimeout(applyNextRate, 100); // 100ms 후 재시도
     }
   }
-  
 
+  video.addEventListener('play', () => {
+    if (!isStopped) applyNextRate(); // 정지 상태가 아니면 시작
+  });
+
+  if (!video.paused) {
+    applyNextRate();
+  }
+
+  // 정지 함수
+  this.stop = function () {
+    isStopped = true; // 정지 상태로 변경
+    if (timerId) clearTimeout(timerId); // 등록된 타이머 취소
+    console.log('배속 변경 작업이 정지되었습니다.');
+  };
+}
+
+// 새 작업 실행 함수
+function startNewPlaybackRates(schedule) {
+  // 기존 실행 중지
+  if (currentController) {
+    currentController.stop();
+  }
+
+  // 새 작업 실행
+  currentController = new setPlaybackRates(schedule);
+}
 
 //   function controlRate(tap, cycle, up) {
 //     var settingsButton = document.querySelector('.icon-button.player-settings-icon');

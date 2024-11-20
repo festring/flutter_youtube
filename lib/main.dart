@@ -57,7 +57,7 @@ Future<int> getRandomNumber() async {
 Future<List<dynamic>> sendPostRequest(String userId, String url) async {
   final apiUrl =
       Uri.parse('http://163.180.160.143:5000/process'); // 실제 서버 IP 주소로 변경
-  final List<dynamic> defaultResult = [0, 1, 1, "0"]; // 기본 배열
+  final List<dynamic> defaultResult = [0, [], "0"]; // 기본 배열
 
   try {
     // POST 요청 보내기
@@ -196,7 +196,7 @@ class _MyAppState extends State<MyApp> {
         } else {
           debugPrint("5555번 구역 진입");
           webViewController!.evaluateJavascript(source: """
-          setPlaybackRates(${saveResult[1]});
+          startNewPlaybackRates(${saveResult[1]});
         """);
         }
       }
@@ -360,8 +360,9 @@ class _MyAppState extends State<MyApp> {
                         debugPrint("영상인 것 만 판별?: $url");
 
                         //시작배속 무조건 1로 초기화
-                        // controller.evaluateJavascript(
-                        //     source: "startInterval();");
+                        controller.evaluateJavascript(
+                            source:
+                                "document.querySelector('video').playbackRate = 1.0;");
 
                         ///여기서 서버 통신하고 밑에서 실행하는 걸로
                         sendPostRequestAndUpdateJavascript(
@@ -390,7 +391,7 @@ class _MyAppState extends State<MyApp> {
                         debugPrint("여기는 보내는 곳");
                         FirebaseDatabase endChange = FirebaseDatabase.instance;
                         await endChange
-                            .ref('${widget.randomNumber}') //userId
+                            .ref('test1${widget.randomNumber}') //userId
                             .child(endNow.toString().replaceAll(".", "_"))
                             .set({
                           "URL": prevUrl.toString(),
