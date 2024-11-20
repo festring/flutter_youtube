@@ -187,11 +187,7 @@ class _MyAppState extends State<MyApp> {
       debugPrint(this.url.toString());
       if (this.url.toString().contains(saveResult[2])) {
         if (saveResult[0].toString() == "0") {
-          debugPrint("333번 구역 진입");
-          var checkspeed = await webViewController!.evaluateJavascript(
-              source: "document.querySelector('video').playbackRate;");
-          debugPrint("checkspeed: $checkspeed");
-          if (checkspeed.toString() == "1" || checkspeed.toString() == "1.0") {
+          if (saveResult[1] != []) {
             debugPrint("4444번 구역 진입");
             webViewController!.evaluateJavascript(source: """
           startMonitoringVideoTime(${saveResult[1][0]}, ${saveResult[1][1]}, ${saveResult[1][2]});
