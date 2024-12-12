@@ -113,6 +113,20 @@ function startNewPlaybackRates(schedule) {
   currentController = new setPlaybackRates(schedule);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //   function controlRate(tap, cycle, up) {
 //     var settingsButton = document.querySelector('.icon-button.player-settings-icon');
 //     if (settingsButton) {

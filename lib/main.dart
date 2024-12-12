@@ -250,24 +250,8 @@ class _MyAppState extends State<MyApp> {
                   setState(() {
                     this.url = url.toString();
                     urlController.text = this.url;
-                    //debugPrint("onLoadStart: $url");
-                    // debugPrint(
-                    //     'onLoadStart Random Number: ${widget.randomNumber}');
                   });
                   debugPrint("onLoadStart: $url");
-                  // controller.evaluateJavascript(source: """
-                  //   function startInterval() {
-                  //     const intervalId = setInterval(() => {
-                  //       const video = document.querySelector('video');
-                  //       if (video) {
-                  //         if (video.currentTime >= 1) {
-                  //           video.playbackRate = 1;
-                  //           clearInterval(intervalId);
-                  //         }
-                  //       }
-                  //     }, 10);
-                  //   }
-                  // """);
                 },
 
                 // 페이지 로딩 완료 시 수행 메서드 정의
